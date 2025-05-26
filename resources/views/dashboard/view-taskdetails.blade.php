@@ -113,20 +113,29 @@
                         {!! $task->description !!}
                     </div>
 
-                    <div class="text-end mt-4">
-                        @if ($task->status == 'open')
-                            <a href="javascript:void(0);" class="btn btn-secondary disabled">Opened</a>
-                        @else
-                            <a href="{{ route('changeTaskStatusOpen', $task->id) }}" class="btn btn-primary">Mark as Opened</a>
+                    @if (isset($user_permissions))
+
+                        @if ($user_permissions->contains('permission_id', 4))
+                            <div class="text-end mt-4">
+                                @if ($task->status == 'open')
+                                    <a href="javascript:void(0);" class="btn btn-secondary disabled">Opened</a>
+                                @else
+                                    <a href="{{ route('changeTaskStatusOpen', $task->id) }}"
+                                        class="btn btn-primary">Mark as
+                                        Opened</a>
+                                @endif
+
+                                @if ($task->status == 'completed')
+                                    <a href="javascript:void(0);" class="btn btn-secondary disabled">Already
+                                        Completed</a>
+                                @else
+                                    <a href="{{ route('changeTaskStatus', $task->id) }}" class="btn btn-primary">Mark as
+                                        Complete</a>
+                                @endif
+                            </div>
                         @endif
-                    
-                        @if ($task->status == 'completed')
-                            <a href="javascript:void(0);" class="btn btn-secondary disabled">Already Completed</a>
-                        @else
-                            <a href="{{ route('changeTaskStatus', $task->id) }}" class="btn btn-primary">Mark as Complete</a>
-                        @endif
-                    </div>
-                    
+                    @endif
+
                 </div>
                 <!-- end card-body-->
             </div>

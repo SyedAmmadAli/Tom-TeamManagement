@@ -29,7 +29,9 @@
 </script>
 
 <script type="module">
-    import { v4 as uuidv4 } from "https://jspm.dev/uuid";
+    import {
+        v4 as uuidv4
+    } from "https://jspm.dev/uuid";
 
     const fileInput = document.getElementById("file-input");
     const imageContainer = document.getElementById("image-container");
@@ -54,6 +56,15 @@
                     image_name: file.name,
                     contentType: file.type,
                     order_id: orderId,
+                //    "ai_version": "4.6",
+                    "cloud_type": "CLEAR",
+                  
+                    "enhance": true,
+                    "sky_replacement": true,
+                    "threesixty": true,
+                    "upscale": true,
+                    "vertical_correction": true,
+                    "window_pull": true
                 }),
             });
 
@@ -83,7 +94,7 @@
             // Start processing status check
             statusText.textContent = 'Processing image...';
             const enhancedUrl = await pollProcessingStatus(imageId, apiKey, statusText);
-            
+
             // Update UI when processing complete
             progressBar.style.width = '100%';
             statusText.textContent = 'Processing complete!';
@@ -92,7 +103,7 @@
             // Create image preview and download elements
             const imgCol = document.createElement('div');
             imgCol.className = 'col-md-4 mb-3';
-            
+
             const card = document.createElement('div');
             card.className = 'card h-100';
 
@@ -137,58 +148,75 @@
     }
 
     async function pollProcessingStatus(imageId, apiKey, statusElement) {
-        return new Promise(async (resolve, reject) => {
-            const maxAttempts = 60; // 60 attempts (1 minute)
-            let attempts = 0;
+    return new Promise(async (resolve, reject) => {
+        const maxAttempts = 60; // 60 attempts (1 minute)
+        let attempts = 0;
 
-            const checkStatus = async () => {
-                try {
-                    attempts++;
-                    const response = await fetch(`https://api.autoenhance.ai/v3/images/${imageId}`, {
+        const checkStatus = async () => {
+            try {
+                attempts++;
+                const response = await fetch(
+                    `https://api.autoenhance.ai/v3/images/${imageId}`, {
                         headers: {
                             "x-api-key": apiKey,
                         },
                     });
 
-                    if (!response.ok) throw new Error('Status check failed');
-                    
-                    const data = await response.json();
+                if (!response.ok) throw new Error('Status check failed');
 
-                    console.log(data);
-                    
-                    statusElement.textContent = `Processing status: ${data.status} (attempt ${attempts}/${maxAttempts})`;
+                const data = await response.json();
 
-                    if (data.status === 'processed') {
-                        const enhancedRes = await fetch(`https://api.autoenhance.ai/v3/images/${imageId}/enhanced`, {
+                console.log(data);
+
+                statusElement.textContent =
+                    `Processing status: ${data.status} (attempt ${attempts}/${maxAttempts})`;
+
+                if (data.status === 'processed') {
+                    const enhancedRes = await fetch(
+                        `https://api.autoenhance.ai/v3/images/${imageId}/enhanced`, {
                             headers: {
                                 "x-api-key": apiKey,
                             },
                         });
-                        const enhancedData = await enhancedRes.json();
-                        resolve(enhancedData.url);
-                    } else if (data.status === 'failed') {
-                        reject(new Error('Image processing failed'));
-                    } else if (attempts >= maxAttempts) {
-                        reject(new Error('Processing timeout'));
-                    } else {
-                        setTimeout(checkStatus, 1000); // Check every second
-                    }
-                } catch (error) {
-                    reject(error);
-                }
-            };
 
-            checkStatus();
-        });
-    }
+                    const contentType = enhancedRes.headers.get("Content-Type");
+
+                    if (contentType.includes("application/json")) {
+                        const json = await enhancedRes.json();
+                        resolve(json.url); // when URL is returned in JSON
+                    } else if (contentType.startsWith("image/")) {
+                        const blob = await enhancedRes.blob();
+                        const objectUrl = URL.createObjectURL(blob);
+                        resolve(objectUrl); // browser-safe object URL
+                    } else {
+                        throw new Error("Unexpected response format");
+                    }
+
+                } else if (data.status === 'failed') {
+                    reject(new Error('Image processing failed'));
+                } else if (attempts >= maxAttempts) {
+                    reject(new Error('Processing timeout'));
+                } else {
+                    setTimeout(checkStatus, 1000); // Retry every second
+                }
+            } catch (error) {
+                reject(error);
+            }
+        };
+
+        checkStatus();
+    });
+}
 
     form.addEventListener("submit", async (e) => {
-        e.preventDefault();
+        e.preventDefault(); 
+
         const files = fileInput.files;
         if (!files.length || !apiKey) return;
 
         submitButton.disabled = true;
-        submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
+        submitButton.innerHTML =
+            '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
 
         const orderId = uuidv4();
         imageContainer.innerHTML = '';

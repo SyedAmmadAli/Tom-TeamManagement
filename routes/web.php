@@ -9,11 +9,13 @@ use App\Http\Controllers\notification\NotificaionController;
 use App\Http\Controllers\social\SocialController;
 use App\Http\Controllers\tasks\TaskController;
 use App\Http\Middleware\AdminAccess;
+use App\Http\Middleware\UserAccess;
 use App\Http\Middleware\ValidUser;
 use Illuminate\Support\Facades\Route;
 
 
 Route::view('/404', 'dashboard.404')->name('error404');
+Route::view('/403', 'dashboard.403')->name('error403');
 
 Route::controller(AuthController::class)->group(function () {
     Route::get('/', 'Login')->name('login');
@@ -39,24 +41,24 @@ Route::controller(AdminController::class)
         Route::get('/edit-user/{id}', 'EditUser')->name('editUser')->middleware(AdminAccess::class);
         Route::post('/process-edituser/{id}', 'ProcessEditUser')->name('processEditUser')->middleware(AdminAccess::class);
         Route::get('/delete-user/{id}', 'DeleteUser')->name('deleteUser')->middleware(AdminAccess::class);
-        Route::get('/calender', 'Calender')->name('calender');
+        Route::get('/calender', 'Calender')->name('calender')->middleware(UserAccess::class);
     });
 
 Route::controller(TaskController::class)
     ->middleware(ValidUser::class)
 
     ->group(function () {
-        Route::get('/create-task', 'CreateTask')->name('createTask');
+        Route::get('/create-task', 'CreateTask')->name('createTask')->middleware(UserAccess::class);
         Route::post('/process-createtask', 'ProcessCreateTask')->name('process-CreateTask');
-        Route::get('/view-tasks', 'ViewTasks')->name('viewTasks');
-        Route::get('/view-taskdetails/{id}', 'ViewTaskDetails')->name('viewTaskDetails');
-        Route::get('/change-taskstatus/{id}', 'ChangeTaskStatus')->name('changeTaskStatus');
+        Route::get('/view-tasks', 'ViewTasks')->name('viewTasks')->middleware(UserAccess::class);
+        Route::get('/view-taskdetails/{id}', 'ViewTaskDetails')->name('viewTaskDetails')->middleware(UserAccess::class);;
+        Route::get('/change-taskstatus/{id}', 'ChangeTaskStatus')->name('changeTaskStatus')->middleware(UserAccess::class);
         Route::get('/change-taskstatusOpen/{id}', 'ChangeTaskStatusOpen')->name('changeTaskStatusOpen');
-        Route::get('/edit-task/{id}', 'EditTask')->name('editTask');
+        Route::get('/edit-task/{id}', 'EditTask')->name('editTask')->middleware(UserAccess::class);
         Route::post('/process-edittask/{id}', 'ProcessEditTask')->name('processEditTask');
         Route::get('/delete-task/{id}', 'DeleteTask')->name('deleteTask')->middleware(AdminAccess::class);
-        Route::post('/remove-attachment', [TaskController::class, 'removeAttachment'])->name('remove.attachment');
-        Route::get('/tasks/events', 'getTasks')->name('tasks.events');
+        Route::post('/remove-attachment','removeAttachment')->name('remove.attachment');
+        Route::get('/tasks/events', 'getTasks')->name('tasks.events')->middleware(UserAccess::class);;
         Route::get('/tasks/calender', 'GetData')->name('getdata');
     });
 
@@ -80,10 +82,10 @@ Route::controller(MediaController::class)
     ->middleware(ValidUser::class)
 
     ->group(function () {
-        Route::get('/view-media', 'ViewMedia')->name('viewMedia');
-        Route::get('/upload-media', 'UploadMedia')->name('uploadMedia');
+        Route::get('/view-media', 'ViewMedia')->name('viewMedia')->middleware(UserAccess::class);
+        Route::get('/upload-media', 'UploadMedia')->name('uploadMedia')->middleware(UserAccess::class);;
         Route::post('/process-uploadMedia', 'ProcessUploadMedia')->name('processUploadMedia');
-        Route::delete('/media/{id}', 'destroy')->name('media.delete');
+        Route::delete('/media/{id}', 'destroy')->name('media.delete')->middleware(UserAccess::class);;
         Route::post('/process-upload-media', 'ProcessUploadTaskMedia')->name('processUploadTaskMedia');
         Route::post('/media/ajax-upload', 'ajaxUpload')->name('media.upload');
         Route::get('/media-gallery', 'getMediaGallery')->name('media-gallery');
@@ -101,7 +103,7 @@ Route::controller(SocialController::class)->group(function () {
     Route::post('/facebook/post', 'postToPage')->name('facebook.post');
     Route::get('/privacy-policy', 'PrivacyPolicy')->name('privacyPolicy');
 
-    Route::get('/instagram/post', 'CreateInstaPost')->name('instagram.post');
+    Route::get('/instagram/post', 'CreateInstaPost')->name('instagram.post')->middleware(UserAccess::class);
     Route::post('/instagram/upload', 'postToInstagram')->name('instagram.upload');
 
     Route::get('/fb-data-deletion', 'dataDeletion');
@@ -122,17 +124,20 @@ Route::controller(AutoEnhancedController::class)
     ->group(function () {
 
         Route::get('/autoenhanced/upload', 'AutoEnhanceForm')->name('autoenhanced.upload');
-        Route::get('/autoenhanced/uploadJS', 'AutoEnhanceFormJS')->name('autoenhanced.uploadjs');
+        Route::get('/autoenhanced/uploadJS', 'AutoEnhanceFormJS')->name('autoenhanced.uploadjs')->middleware(UserAccess::class);
         Route::post('/autoenhanced/enhance', 'enhanceImage')->name('enhance.image');
         // Route::get('/autoenhanced/view', 'ViewAutoEnhanced')->name('autoenhanced.view');
         Route::get('/preview-enhanced-image/{imageId}', 'previewEnhancedImage')->name('preview.enhanced.image');
     });
 
 
-Route::get('/chatgpt', [GptController::class, 'index'])->name('chatgpt');
-Route::post('/ask-chatgpt', [GptController::class, 'ask'])->name('ask.chatgpt');
-Route::get('/property-Details-Generator', [GptController::class, 'PropDetails'])->name('propertyDetailsGenerator');
-Route::post('/property-Detail-Response', [GptController::class, 'PropertyDetailsResponse'])->name('propertyDetailResponse');
-Route::post('/generate-prompt', [GptController::class, 'generatePromptFromImage'])->name('generate.prompt');
+Route::controller(GptController::class)
+    ->middleware(ValidUser::class)
 
-
+    ->group(function () {
+        Route::get('/chatgpt', 'index')->name('chatgpt');
+        // Route::post('/ask-chatgpt', 'ask')->name('ask.chatgpt');
+        Route::get('/property-Details-Generator', 'PropDetails')->name('propertyDetailsGenerator')->middleware(UserAccess::class);
+        Route::post('/property-Detail-Response', 'PropertyDetailsResponse')->name('propertyDetailResponse');
+        Route::post('/generate-prompt', 'generatePromptFromImage')->name('generate.prompt');
+    });

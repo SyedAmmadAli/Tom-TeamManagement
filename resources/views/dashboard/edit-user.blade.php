@@ -95,6 +95,29 @@
                         @enderror
                     </div>
 
+                    <!-- Permissions -->
+                    <div class="mb-3">
+                        <label class="form-label">Permissions</label>
+                        <div class="row">
+                            @foreach ($permissions as $permission)
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" name="permissions[]"
+                                            id="permission_{{ $permission->id }}" value="{{ $permission->id }}"
+                                            @if (in_array($permission->id, $useraccess)) checked @endif>
+                                            {{-- {{dd($useraccess)}} --}}
+                                        <label class="form-check-label" for="permission_{{ $permission->id }}">
+                                            {{ ucwords(str_replace('_', ' ', $permission->name)) }}
+                                        </label>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                        @error('permissions')
+                            <p class="text-danger mt-2"> {{ $message }}</p>
+                        @enderror
+                    </div>
+
                     <div class="mb-3">
                         <input type="submit" class="btn btn-primary" id="sbtn" name="sbtn" value="Submit">
                     </div>

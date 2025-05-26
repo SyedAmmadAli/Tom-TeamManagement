@@ -12,9 +12,11 @@
                 style="position: absolute; top: 8px; right: 15px;">
                 @csrf
                 @method('DELETE')
+                @if ($user_permissions->contains('permission_id', 11))
                 <button type="submit" class="btn btn-sm btn-outline-danger p-1" title="Delete">
                     <i class="bi bi-trash"></i>
                 </button>
+                @endif
             </form>
             @if ($isImage)
                 {{-- Show image preview --}}

@@ -73,15 +73,26 @@
                             </td> --}}
 
                                     <td>
-                                        @if (Auth::user()->id == $task->assigned_from || Auth::user()->role_id == '1')
-                                            <a href="{{ route('editTask', $task->id) }}" class="btn btn-primary">Edit</a>
-                                        @endif
-                                        <a href="{{ route('viewTaskDetails', $task->id) }}"
-                                            class="btn btn-warning">View</a>
+                                        @if (isset($user_permissions))
+                                            @if ($user_permissions->contains('permission_id', 5))
+                                                {{-- 3 = Edit Task Permission --}}
+                                                @if (Auth::user()->id == $task->assigned_from || Auth::user()->role_id == '1')
+                                                    <a href="{{ route('editTask', $task->id) }}"
+                                                        class="btn btn-primary">Edit</a>
+                                                @endif
+                                            @endif
 
-                                        @if (Auth::user()->role_id == '1')
-                                            <a href="{{ route('deleteTask', $task->id) }}"
-                                                class="btn btn-danger">Delete</a>
+                                            @if ($user_permissions->contains('permission_id', 3))
+                                                <a href="{{ route('viewTaskDetails', $task->id) }}"
+                                                    class="btn btn-warning">View</a>
+                                            @endif
+
+                                            @if ($user_permissions->contains('permission_id', 6))
+                                                @if (Auth::user()->role_id == '1')
+                                                    <a href="{{ route('deleteTask', $task->id) }}"
+                                                        class="btn btn-danger">Delete</a>
+                                                @endif
+                                            @endif
                                         @endif
                                     </td>
                                 </tr>

@@ -95,9 +95,29 @@
                             @endforeach
                         </select>
 
+                        @error('role_id')
+                            <p class="text-danger mt-2"> {{ $errors->first('role_id') }}</p>
+                        @enderror
+                    </div>
 
-                        @error('email')
-                            <p class="text-danger mt-2"> {{ $errors->first('email') }}</p>
+                    <!-- Permissions -->
+                    <div class="mb-3">
+                        <label class="form-label">Permissions</label>
+                        <div class="row">
+                            @foreach ($permissions as $permission)
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" name="permissions[]"
+                                            id="permission_{{ $permission->id }}" value="{{ $permission->id }}">
+                                        <label class="form-check-label" for="permission_{{ $permission->id }}">
+                                            {{ ucwords(str_replace('_', ' ', $permission->name)) }}
+                                        </label>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                        @error('permissions')
+                            <p class="text-danger mt-2"> {{ $message }}</p>
                         @enderror
                     </div>
 

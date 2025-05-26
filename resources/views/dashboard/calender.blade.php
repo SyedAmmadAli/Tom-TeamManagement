@@ -27,11 +27,18 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
+
+    
+    
    document.addEventListener('DOMContentLoaded', function() {
+
+    
     var calendarEl = document.getElementById('calendar');
     var calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
+
         events: "{{ route('tasks.events') }}", // Fetch tasks dynamically
+
         eventColor: '#007bff', // Default blue color
         eventTextColor: '#fff', // White text
 

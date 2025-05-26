@@ -118,15 +118,23 @@
                         <!-- Toggle buttons -->
                         <div class="d-flex mb-3">
                             <!-- Button for Media Gallery -->
+
+                            @if ($user_permissions->contains('permission_id', 9))
+
                             <button type="button" class="btn btn-primary me-2" data-bs-toggle="modal"
                                 data-bs-target="#mediaGalleryModal">
                                 Choose from Media Gallery
                             </button>
+
+                            @endif
                             <!-- Button for Upload Files Directly -->
+                            @if ($user_permissions->contains('permission_id', 10))
+
                             <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
                                 data-bs-target="#uploadFileModal">
                                 Upload Files Directly
                             </button>
+                            @endif
                         </div>
 
                         <!-- Modal for Media Gallery -->

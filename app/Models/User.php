@@ -54,11 +54,11 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Role::class, 'role_id', 'id');
     }
-    
+
 
     public function assiged_tasks()
     {
-        return $this->hasMany(Task::class, 'assigned_by' , 'id');
+        return $this->hasMany(Task::class, 'assigned_by', 'id');
     }
 
 
@@ -66,10 +66,19 @@ class User extends Authenticatable
     {
         return $this->hasMany(AssignedEmployee::class, 'user_id', 'id');
     }
-   
-    public function notifications()
-{
-    return $this->hasMany(TaskNotification::class, 'user_id');
-}
 
+    public function notifications()
+    {
+        return $this->hasMany(TaskNotification::class, 'user_id');
+    }
+
+    public function permissions()
+    {
+        return $this->belongsToMany(Permission::class, 'user_permissions');
+    }
+
+    public function user_permissions()
+    {
+        return $this->hasMany(UserPermission::class, 'user_id', 'id');
+    }
 }

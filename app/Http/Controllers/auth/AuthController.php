@@ -29,6 +29,7 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt($userData)) {
+            // dd(Auth::user());
             return redirect()->route('dashboard');
         } else {
             return redirect()->route('login')->with('error', 'Invalid Credentials');

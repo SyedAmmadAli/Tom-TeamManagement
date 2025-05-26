@@ -367,40 +367,42 @@
 
         // Show selected media with trash icon on all
         $('#selectMediaBtn').on('click', function() {
-            const selectedMediaDisplay = $('#selectedMediaDisplay');
-            selectedMediaDisplay.empty();
+                const selectedMediaDisplay = $('#selectedMediaDisplay');
+                selectedMediaDisplay.empty();
 
-            selectedMedia.forEach(function(media, index) {
-                const fileExtension = media.name.split('.').pop().toUpperCase();
+                selectedMedia.forEach(function(media, index) {
+                        const fileExtension = media.name.split('.').pop().toUpperCase();
 
-                const preview = media.type === 'image' ?
-                    `<img class="card-img-top" src="${media.url}" alt="${media.name}" style="height: 8rem; object-fit: cover;">` :
-                    `<div class="d-flex align-items-center justify-content-center" style="height: 8rem; background-color: #f4f4f4;">
+                        const preview = media.type === 'image' ?
+                            `<img class="card-img-top" src="${media.url}" alt="${media.name}" style="height: 8rem; object-fit: cover;">` :
+                            `<div class="d-flex align-items-center justify-content-center" style="height: 8rem; background-color: #f4f4f4;">
                    <strong>${fileExtension}</strong>
                </div>`;
 
-                const deleteBtn = `
+         
+                        const deleteBtn = `
             <button class="btn btn-sm btn-outline-danger position-absolute top-0 end-0 m-1 remove-selected-media" data-index="${index}">
                 <i class="fas fa-trash"></i>
             </button>`;
+                  
 
-                const mediaElement = `
+                    const mediaElement = `
             <div class="media-preview position-relative" data-index="${index}">
                 <div class="card m-2" style="width: 10rem; position: relative;">
                     ${preview}
                     ${deleteBtn}
+                    }
                     <div class="card-body">
                         <h6 class="card-title text-truncate">${media.name}</h6>
                     </div>
                 </div>
             </div>
-        `;
-                selectedMediaDisplay.append(mediaElement);
-            });
+        `; 
+                });
 
             // Create hidden input fields for each selected media
-            const selectedMediaSection = $('#selectedMediaSection');
-            selectedMediaSection.find('input').remove(); // Remove any previous inputs
+            const selectedMediaSection = $('#selectedMediaSection'); selectedMediaSection.find('input')
+            .remove(); // Remove any previous inputs
 
             selectedMedia.forEach(function(media, index) {
                 const inputElement = `
@@ -410,13 +412,13 @@
             });
         });
 
-        // Delete selected file (image or non-image)
-        $(document).on('click', '.remove-selected-media', function(e) {
-            e.stopPropagation();
-            const index = $(this).data('index');
-            selectedMedia.splice(index, 1);
-            $('#selectMediaBtn').trigger('click');
-        });
+    // Delete selected file (image or non-image)
+    $(document).on('click', '.remove-selected-media', function(e) {
+        e.stopPropagation();
+        const index = $(this).data('index');
+        selectedMedia.splice(index, 1);
+        $('#selectMediaBtn').trigger('click');
+    });
     });
 </script>
 
@@ -551,7 +553,7 @@
             });
         });
 
-        setInterval(fetchNotifications, 10000);
+        setInterval(fetchNotifications, 120000);
         fetchNotifications();
     });
 </script>
